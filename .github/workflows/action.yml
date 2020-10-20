@@ -1,23 +1,24 @@
 name: OfficeRenew
 
-on: [ create ]
-# on:
-#   push:
-#     branches: [ master ]
-#   schedule:
-#     - cron: '*/20 * * * *'
+on:
+  workflow_dispatch:
+    inputs:
+      times:
+        description: 'Script run times'
+        required: false
+        default: 5
+  push:
+    branches: [ master ]
+  schedule:
+    - cron: '0 */2 * * *'
 
 jobs:
   renew:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
 
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.8
+      - uses: actions/setup-python@v2
 
       - name: Install dependencies
         run: |
@@ -26,15 +27,18 @@ jobs:
 
       - name: Execute script
         env:
+          RUN_TIMES: ${{ github.event.inputs.times }}
+          GITHUB_REPO: ${{ github.repository }}
+          ACTION_TOKEN: ${{ secrets.ACTION_TOKEN }}
           CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          CLIENT_URI: ${{ secrets.CLIENT_URI }}
+          CLIENT_TOKEN: ${{ secrets.CLIENT_TOKEN }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
           python main.py
 
-      - name: Update refresh_token.txt
-        run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add refresh_token.txt
-          git commit -m "Update refresh_token.txt"
-          git push
+      - name: Delete workflow runs
+        uses: Mattraks/delete-workflow-runs@main
+        with:
+          retain_days: 1
+          keep_minimum_runs: 0

@@ -1,9 +1,5 @@
-## OfficeRenew
+# OfficeRenew
 
-### About
+![OfficeRenew](https://github.com/itswait/office-renew/workflows/OfficeRenew/badge.svg)
 
 Office(Microsoft) 365 Subscription Auto Renew Script.
-
-### Thanks
-
-[AutoApiSecret](https://github.com/wangziyingwen/AutoApiSecret)
